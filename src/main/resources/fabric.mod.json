@@ -1,0 +1,33 @@
+{
+  "schemaVersion": 1,
+  "id": "thestarrymininglist",
+  "version": "${version}",
+  "name": "TheStarryMiningList",
+  "description": "record mining",
+  "authors": [
+    "crackun24"
+  ],
+  "contact": {
+    "website": "null",
+    "repo": "github.com"
+  },
+  "license": "All-Rights-Reserved",
+  "icon": "assets/icon.png",
+  "environment": "server",
+  "entrypoints": {
+    "client": [
+      "com.mininglist.thestarrymininglist.client.TheStarryMiningListClient"
+    ],
+    "main": [
+      "com.mininglist.thestarrymininglist.TheStarryMiningList"
+    ]
+  },
+  "mixins": [
+    "TheStarryMiningList.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.21",
+    "fabric": "*",
+    "minecraft": "1.20.1"
+  }
+}
