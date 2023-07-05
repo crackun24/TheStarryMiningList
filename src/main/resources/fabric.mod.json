@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "id": "thestarrymininglist",
+  "id": "the_starry_mining_list",
   "version": "${version}",
   "name": "TheStarryMiningList",
   "description": "record mining",
@@ -29,5 +29,9 @@
     "fabricloader": ">=0.14.21",
     "fabric": "*",
     "minecraft": "1.20.1"
-  }
+  },
+  "permissions": [
+    "configread",
+    "configwrite"
+  ]
 }
