@@ -22,7 +22,7 @@ public class TheStarryMiningList implements ModInitializer {
     private Scoreboard mScoreboard;//计分板对象
     private ScoreboardObjective mScoreboardObj;//计分板的计分对象
 
-    private void CreateScoreboard(final String name,final String display_name) {
+    private void CreateScoreboard(final String name, final String display_name) {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             this.mScoreboard = server.getWorld(World.OVERWORLD).getScoreboard();//获取世界的计分板
 
@@ -31,7 +31,7 @@ public class TheStarryMiningList implements ModInitializer {
             if (mScoreboardObj == null) {//判断是否为空对象
                 this.mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, Text.literal(display_name),
                         ScoreboardCriterion.RenderType.INTEGER);
-                this.mScoreboard.setObjectiveSlot(1,this.mScoreboardObj);//设置显示的位置
+                this.mScoreboard.setObjectiveSlot(1, this.mScoreboardObj);//设置显示的位置
             }
         });
     }
@@ -54,10 +54,9 @@ public class TheStarryMiningList implements ModInitializer {
 
         Config config = new Config(config_file_path.getPath());//读取配置文件
 
-        String name = config.GetValue("ScoreboardDisplayName");//获取计分板的名字
-        String disPlayName = config.GetValue("ScoreboardName");//获取计分板显示的名字
-
-        CreateScoreboard(name,disPlayName);//创建计分板
+        String name = config.GetValue("ScoreboardName");//获取计分板的名字
+        String disPlayName = config.GetValue("ScoreboardDisplayName");//获取计分板显示的名字
+        CreateScoreboard(name, disPlayName);//创建计分板
         HookPlayerBreakBlockEvent();//设置玩家破坏方块事件的回调
     }
 }

@@ -4,6 +4,7 @@ import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
+import java.nio.charset.StandardCharsets;
 import java.util.Properties;
 
 //配置类
@@ -39,8 +40,9 @@ public class Config {
 
         this.mProp = new Properties();//创建新的properties文件读取对象
 
-        try (InputStream input = new FileInputStream(file)) {//创建输入流
-            this.mProp.load(input);//加载配置文件
+        try (Reader reader = new InputStreamReader(new FileInputStream(file),
+                StandardCharsets.UTF_8)) {//创建输入流,使用utf-8的字符集
+            this.mProp.load(reader);//加载配置文件
         } catch (Exception e) {
             e.printStackTrace();
         }
