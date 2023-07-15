@@ -1,17 +1,18 @@
 {
   "schemaVersion": 1,
-  "id": "the_starry_mining_list",
+  "id": "${id}",
   "version": "${version}",
-  "name": "TheStarryMiningList",
+  "name": "${name}",
   "description": "record mining",
   "authors": [
-    "crackun24"
+    "crackun24",
+    "1024_byteeeee"
   ],
   "contact": {
-    "website": "null",
+    "website": "https://github.com/crackun24/TheStarryMiningList",
     "repo": "https://github.com/crackun24/TheStarryMiningList"
   },
-  "license": "All-Rights-Reserved",
+  "license": "LGPL-3.0",
   "icon": "assets/icon.png",
   "environment": "*",
   "entrypoints": {
@@ -26,9 +27,7 @@
     "TheStarryMiningList.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.21",
-    "fabric": "*",
-    "minecraft": "1.20.1"
+    "minecraft": "${minecraft_dependency}"
   },
   "permissions": [
     "configread",

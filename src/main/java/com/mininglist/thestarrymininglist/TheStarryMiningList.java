@@ -9,27 +9,31 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
-import net.minecraft.text.Text;
+//#if MC>=11900
+//$$ import net.minecraft.text.Text;
+//#else
+import net.minecraft.text.LiteralText;
+//#endif
 import net.minecraft.world.World;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import java.io.File;
+import java.util.Objects;
 
 
 public class TheStarryMiningList implements ModInitializer {
-    private static final Logger LOGGER = LogManager.getLogger();
     private Scoreboard mScoreboard;//计分板对象
     private ScoreboardObjective mScoreboardObj;//计分板的计分对象
 
     private void CreateScoreboard(final String name, final String display_name) {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
-            this.mScoreboard = server.getWorld(World.OVERWORLD).getScoreboard();//获取世界的计分板
-
+            this.mScoreboard = Objects.requireNonNull(server.getWorld(World.OVERWORLD)).getScoreboard();//获取世界的计分板
             this.mScoreboardObj = mScoreboard.getObjective(name);//获取服务器的计分板对象
-
             if (mScoreboardObj == null) {//判断是否为空对象
-                this.mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, Text.literal(display_name),
+                //#if MC<11900
+                this.mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, new LiteralText(display_name),
+                //#else
+                //$$ this.mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, Text.literal(display_name),
+                        //#endif
                         ScoreboardCriterion.RenderType.INTEGER);
                 this.mScoreboard.setObjectiveSlot(1, this.mScoreboardObj);//设置显示的位置
             }
@@ -40,7 +44,6 @@ public class TheStarryMiningList implements ModInitializer {
         PlayerBlockBreakEvents.AFTER.register(((world, player, pos, state, blockEntity) -> {
             ScoreboardPlayerScore score = this.mScoreboard.getPlayerScore(player.getName().getString(),
                     this.mScoreboardObj);//获取玩家计分对象
-
             int player_score = score.getScore();//获取玩家当前的计分数
             player_score++;//分数递增
             score.setScore(player_score);//更新玩家的分数
@@ -51,9 +54,7 @@ public class TheStarryMiningList implements ModInitializer {
     public void onInitialize() {
         FabricLoader loader = FabricLoader.getInstance();//获取加载器的实例
         File config_file_path = loader.getConfigDir().toFile();//获取配置文件
-
         Config config = new Config(config_file_path.getPath());//读取配置文件
-
         String name = config.GetValue("ScoreboardName");//获取计分板的名字
         String disPlayName = config.GetValue("ScoreboardDisplayName");//获取计分板显示的名字
         CreateScoreboard(name, disPlayName);//创建计分板
