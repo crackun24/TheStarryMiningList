@@ -9,11 +9,11 @@
   ],
   "contact": {
     "website": "null",
-    "repo": "github.com"
+    "repo": "https://github.com/crackun24/TheStarryMiningList"
   },
   "license": "All-Rights-Reserved",
   "icon": "assets/icon.png",
-  "environment": "server",
+  "environment": "*",
   "entrypoints": {
     "client": [
       "com.mininglist.thestarrymininglist.client.TheStarryMiningListClient"
