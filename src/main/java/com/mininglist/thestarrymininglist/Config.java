@@ -1,25 +1,21 @@
 package com.mininglist.thestarrymininglist;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.*;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Properties;
+import java.io.*;
 
 //配置类
 public class Config {
     static final String CONFIG_FILE_NAME = "miningList.properties";//配置文件的名称
-    private Properties mProp;
-    private final Logger LOGGER = LogManager.getLogger();//日志记录器
+    private final Properties mProp;
 
-    private final String DEFAULT_CONFIG_DATA = "ScoreboardDisplayName = starryBoard\n" +
-            "ScoreboardName = starryBoard";
-
-    private void CreateDefaultConfigFile(File file) throws IOException {
-        file.createNewFile();//创建一个新的配置文件
+    private void CreateDefaultConfigFile(File file) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file)))//创建新的文件写入对象
         {
+            String DEFAULT_CONFIG_DATA =
+                    "ScoreboardDisplayName = starryBoard\n" +
+                    "ScoreboardName = starryBoard";
             writer.write(DEFAULT_CONFIG_DATA);//写入默认的配置文件信息
         } catch (Exception e) {
             e.printStackTrace();
@@ -40,7 +36,7 @@ public class Config {
 
         this.mProp = new Properties();//创建新的properties文件读取对象
 
-        try (Reader reader = new InputStreamReader(new FileInputStream(file),
+        try (Reader reader = new InputStreamReader(Files.newInputStream(file.toPath()),
                 StandardCharsets.UTF_8)) {//创建输入流,使用utf-8的字符集
             this.mProp.load(reader);//加载配置文件
         } catch (Exception e) {
