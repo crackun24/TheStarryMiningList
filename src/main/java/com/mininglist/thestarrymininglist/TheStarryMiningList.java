@@ -2,6 +2,11 @@ package com.mininglist.thestarrymininglist;
 
 import net.fabricmc.api.ModInitializer;
 
+//#if MC < 11900
+import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+//#else
+//$$ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
+//#endif
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -9,7 +14,7 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
-//#if MC>=11900
+//#if MC >= 11900
 //$$ import net.minecraft.text.Text;
 //#else
 import net.minecraft.text.LiteralText;
@@ -19,23 +24,53 @@ import net.minecraft.world.World;
 import java.io.File;
 import java.util.Objects;
 
+import static net.minecraft.server.command.CommandManager.literal;
+
 
 public class TheStarryMiningList implements ModInitializer {
-    private Scoreboard mScoreboard;//计分板对象
-    private ScoreboardObjective mScoreboardObj;//计分板的计分对象
+    @Override
+    public void onInitialize() {
+        // 注册命令以切换计分板的可见/隐藏状态
+        //#if MC < 11900
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(literal("TheStarryMiningList")
+                //#else
+                //$$ CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(literal("TheStarryMiningList")
+                //#endif
+                .executes(context -> {
+                    if(isScoreboardVisible) {
+                        this.mScoreboard.setObjectiveSlot(1, this.mScoreboardObj); // 显示计分板
+                    } else {
+                        this.mScoreboard.setObjectiveSlot(1, null); // 隐藏计分板
+                    }
+                    isScoreboardVisible = !isScoreboardVisible;
+                    return 1;
+                })));
+
+        FabricLoader loader = FabricLoader.getInstance();//获取加载器的实例
+        File config_file_path = loader.getConfigDir().toFile();//获取配置文件
+        Config config = new Config(config_file_path.getPath());//读取配置文件
+        String name = config.GetValue("ScoreboardName");//获取计分板的名字
+        String disPlayName = config.GetValue("ScoreboardDisplayName");//获取计分板显示的名字
+        CreateScoreboard(name, disPlayName);//创建计分板
+        HookPlayerBreakBlockEvent();//设置玩家破坏方块事件的回调
+    }
+
+    private Scoreboard mScoreboard; //计分板对象
+    private ScoreboardObjective mScoreboardObj; //计分板的计分对象
+    private boolean isScoreboardVisible = false; //计分板的开关状态
 
     private void CreateScoreboard(final String name, final String display_name) {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             this.mScoreboard = Objects.requireNonNull(server.getWorld(World.OVERWORLD)).getScoreboard();//获取世界的计分板
             this.mScoreboardObj = mScoreboard.getObjective(name);//获取服务器的计分板对象
             if (mScoreboardObj == null) {//判断是否为空对象
-                //#if MC<11900
-                this.mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, new LiteralText(display_name),
-                //#else
-                //$$ this.mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, Text.literal(display_name),
-                        //#endif
-                        ScoreboardCriterion.RenderType.INTEGER);
-                this.mScoreboard.setObjectiveSlot(1, this.mScoreboardObj);//设置显示的位置
+                    //#if MC < 11900
+                    this.mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, new LiteralText(display_name),
+                            //#else
+                            //$$ this.mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, Text.literal(display_name),
+                            //#endif
+                            ScoreboardCriterion.RenderType.INTEGER);
+                    this.mScoreboard.setObjectiveSlot(1, null);
             }
         });
     }
@@ -48,16 +83,5 @@ public class TheStarryMiningList implements ModInitializer {
             player_score++;//分数递增
             score.setScore(player_score);//更新玩家的分数
         }));
-    }
-
-    @Override
-    public void onInitialize() {
-        FabricLoader loader = FabricLoader.getInstance();//获取加载器的实例
-        File config_file_path = loader.getConfigDir().toFile();//获取配置文件
-        Config config = new Config(config_file_path.getPath());//读取配置文件
-        String name = config.GetValue("ScoreboardName");//获取计分板的名字
-        String disPlayName = config.GetValue("ScoreboardDisplayName");//获取计分板显示的名字
-        CreateScoreboard(name, disPlayName);//创建计分板
-        HookPlayerBreakBlockEvent();//设置玩家破坏方块事件的回调
     }
 }
