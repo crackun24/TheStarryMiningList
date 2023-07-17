@@ -8,4 +8,4 @@
  ScoreboardName: 计分板内部显示的名字
 
 ## 命令：
-`/TheStarryMiningList`: 用于控制计分板的显示/隐藏（于v1.2.0版本添加）。
+`/TheStarryMiningList` 用于控制计分板的显示/隐藏（于v1.2.0版本添加，默认关闭）。
