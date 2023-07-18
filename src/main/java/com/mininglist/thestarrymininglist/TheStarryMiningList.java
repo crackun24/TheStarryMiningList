@@ -19,6 +19,7 @@ import net.minecraft.scoreboard.ScoreboardPlayerScore;
 //#else
 import net.minecraft.text.LiteralText;
 //#endif
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 import java.io.File;
@@ -39,8 +40,10 @@ public class TheStarryMiningList implements ModInitializer {
                 .executes(context -> {
                     if(isScoreboardVisible) {
                         this.mScoreboard.setObjectiveSlot(1, this.mScoreboardObj); // 显示计分板
+                        context.getSource().getPlayer().sendMessage(Text.of("计分板已开启"),true);
                     } else {
                         this.mScoreboard.setObjectiveSlot(1, null); // 隐藏计分板
+                        context.getSource().getPlayer().sendMessage(Text.of("计分板已关闭"),true);
                     }
                     isScoreboardVisible = !isScoreboardVisible;
                     return 1;
