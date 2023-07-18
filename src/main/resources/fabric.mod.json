@@ -14,11 +14,7 @@
   },
   "license": "LGPL-3.0",
   "icon": "assets/icon.png",
-  "environment": "*",
   "entrypoints": {
-    "client": [
-      "com.mininglist.thestarrymininglist.client.TheStarryMiningListClient"
-    ],
     "main": [
       "com.mininglist.thestarrymininglist.TheStarryMiningList"
     ]
@@ -32,5 +28,11 @@
   "permissions": [
     "configread",
     "configwrite"
-  ]
+  ],
+  "commands": {
+    "TheStarryMiningList": {
+      "description": "TheStarryMiningList ON/OFF",
+      "aliases": []
+    }
+  }
 }
