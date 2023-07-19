@@ -4,8 +4,22 @@
 
 ## 配置文件:
  路径位于"config/miningList.properties"中
- ScoreboardDisplayName: 计分板显示的名字
- ScoreboardName: 计分板内部显示的名字
+ <br>
+ ScoreboardDisplayName: 计分板在屏幕上显示的名字
+ <br>
+ ScoreboardName: 计分板的名字
+```
+默认的配置：
+ScoreboardDisplayName = MiningList
+ScoreboardName = MiningList
+```
 
 ## 命令：
-`/TheStarryMiningList` 用于控制计分板的显示/隐藏（于v1.2.0版本添加，默认关闭）。
+**/TheStarryMiningListSwitch**
+<br>用于控制计分板的显示/隐藏（默认关闭）。
+- 格式：/setScoreboardDisplayName
+
+**/setScoreboardDisplayName**
+<br>用于设置计分板的**显示名称**，命令中的`scoreboardName`与`displayName`默认情况下都为`MiningList`,`scoreboardName`是在配置文件中定义的，而`displayName`可以通过此命令在游戏中修改，也就是游戏内显示的名称。
+- 格式：/setScoreboardDisplayName **[scoreboardName]** **[displayName]**
+  
