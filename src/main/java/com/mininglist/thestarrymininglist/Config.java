@@ -14,8 +14,8 @@ public class Config {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file)))//创建新的文件写入对象
         {
             String DEFAULT_CONFIG_DATA =
-                    "ScoreboardDisplayName = starryBoard\n" +
-                    "ScoreboardName = starryBoard";
+                    "ScoreboardDisplayName = MiningList\n" +
+                    "ScoreboardName = MiningList";
             writer.write(DEFAULT_CONFIG_DATA);//写入默认的配置文件信息
         } catch (Exception e) {
             e.printStackTrace();
