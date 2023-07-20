@@ -3,8 +3,8 @@ package com.mininglist.thestarrymininglist;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.tree.LiteralCommandNode;
-import net.fabricmc.api.ModInitializer;
 
+import net.fabricmc.api.ModInitializer;
 //#if MC < 11900
 import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 //#else
@@ -17,13 +17,10 @@ import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.scoreboard.ScoreboardPlayerScore;
+import net.minecraft.server.command.ServerCommandSource;
 //#if MC >= 11900
 //$$ import net.minecraft.text.Text;
-//$$ import net.minecraft.server.command.ServerCommandSource;
-//$$ import net.minecraft.server.command.CommandManager;
 //#else
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.text.LiteralText;
 //#endif
 import net.minecraft.text.Text;
@@ -32,6 +29,7 @@ import net.minecraft.world.World;
 import java.io.File;
 import java.util.Objects;
 
+import static net.minecraft.server.command.CommandManager.argument;
 import static net.minecraft.server.command.CommandManager.literal;
 
 
@@ -40,11 +38,12 @@ public class TheStarryMiningList implements ModInitializer {
     public void onInitialize() {
         // 注册命令以切换计分板的可见/隐藏状态
         //#if MC < 11900
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(literal("TheStarryMiningList")
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> dispatcher.register(literal("TheStarryMiningListSwitch")
                 //#else
-                //$$ CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(literal("TheStarryMiningList")
+                //$$ CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> dispatcher.register(literal("TheStarryMiningListSwitch")
                 //#endif
                 .executes(context -> {
+                    isScoreboardVisible = !isScoreboardVisible;
                     if (isScoreboardVisible) {
                         this.mScoreboard.setObjectiveSlot(1, this.mScoreboardObj); // 显示计分板
                         context.getSource().getPlayer().sendMessage(Text.of("已启用计分板"),true);
@@ -52,27 +51,27 @@ public class TheStarryMiningList implements ModInitializer {
                         this.mScoreboard.setObjectiveSlot(1, null); // 隐藏计分板
                         context.getSource().getPlayer().sendMessage(Text.of("已关闭计分板"),true);
                     }
-                    isScoreboardVisible = !isScoreboardVisible;
                     return 1;
                 })));
-            //#if MC >= 11900
-            //$$ CommandRegistrationCallback.EVENT.register((dispatcher, dedicated,environment) -> {
-            //#else
+
+        // 注册命令以更改计分板的显示名称
+        //#if MC < 11900
         CommandRegistrationCallback.EVENT.register((dispatcher, dedicated) -> {
+            //#else
+        //$$ CommandRegistrationCallback.EVENT.register((dispatcher, dedicated, environment) -> {
             //#endif
-            LiteralCommandNode<ServerCommandSource> command = dispatcher.register(
-                    CommandManager.literal("setStarryBoardDisplayName")
-                            .then(CommandManager.argument("scoreBoardName", StringArgumentType.word())
-                                    .then(CommandManager.argument("scoreBoardDisplayName", StringArgumentType.word())
-                                            .executes(context -> {
-                                                String scoreboardName = StringArgumentType.getString(context, "scoreboardName");
-                                                String displayName = StringArgumentType.getString(context, "displayName");
-                                                setScoreBoardDisplayName(scoreboardName, displayName, context.getSource());
-                                                return 1;
-                                            })
-                                    )
+            LiteralCommandNode<ServerCommandSource> command = literal("setScoreboardDisplayName")
+                    .then(argument("scoreboardName", StringArgumentType.word())
+                            .then(argument("displayName", StringArgumentType.greedyString())
+                                    .executes(context -> {
+                                        String scoreboardName = StringArgumentType.getString(context, "scoreboardName");
+                                        String displayName = StringArgumentType.getString(context, "displayName");
+                                        setScoreboardDisplayName(scoreboardName, displayName, context.getSource());
+                                        return 1;
+                                    })
                             )
-            );
+                    ).build();
+            dispatcher.getRoot().addChild(command);
         });
 
         FabricLoader loader = FabricLoader.getInstance();//获取加载器的实例
@@ -88,27 +87,28 @@ public class TheStarryMiningList implements ModInitializer {
     private ScoreboardObjective mScoreboardObj; //计分板的计分对象
     private boolean isScoreboardVisible = false; //计分板的开关状态
 
-    //更改计分板显示名称
-    private void setScoreBoardDisplayName(String scoreboardName, String displayName, ServerCommandSource source) {
+    //更改计分板的显示名称
+    private void setScoreboardDisplayName(String scoreboardName, String displayName, ServerCommandSource source) throws CommandSyntaxException {
+        //#if MC < 11900
         Scoreboard scoreboard = source.getMinecraftServer().getScoreboard();
+        //#else
+        //$$ Scoreboard scoreboard = source.getServer().getScoreboard();
+        //#endif
         ScoreboardObjective objective = scoreboard.getNullableObjective(scoreboardName);
         if (objective != null) {
-            objective.setDisplayName(Text.of(displayName));
-
-            try {
-                source.getPlayer().sendMessage(Text.of("Scoreboard display name set to: " + scoreboardName),true);
-            } catch (CommandSyntaxException e) {
-               e.printStackTrace();
-            }
-        } else {
-            try {
-                source.getPlayer().sendMessage(Text.of("Scoreboard not found: " + scoreboardName),true);
-            } catch (CommandSyntaxException e) {
-                e.printStackTrace();
-            }
+            //#if MC < 11900
+            objective.setDisplayName(new LiteralText(displayName));
+            //#else
+            //$$ objective.setDisplayName(Text.literal(displayName));
+            //#endif
         }
+        scoreboard.setObjectiveSlot(1, objective);
+        source.getPlayer().sendMessage(Text.of(
+                "计分板 [" + scoreboardName + "] 显示名称已更改为: [" + displayName + "]"
+        ), true);
     }
 
+    //创建计分板
     private void CreateScoreboard(final String name, final String display_name) {
         ServerLifecycleEvents.SERVER_STARTED.register(server -> {
             this.mScoreboard = Objects.requireNonNull(server.getWorld(World.OVERWORLD)).getScoreboard();//获取世界的计分板
@@ -125,7 +125,8 @@ public class TheStarryMiningList implements ModInitializer {
         });
     }
 
-    private void HookPlayerBreakBlockEvent() {//设置玩家破坏方块事件的回调
+    //设置玩家破坏方块事件的回调
+    private void HookPlayerBreakBlockEvent() {
         PlayerBlockBreakEvents.AFTER.register(((world, player, pos, state, blockEntity) -> {
             ScoreboardPlayerScore score = this.mScoreboard.getPlayerScore(player.getName().getString(),
                     this.mScoreboardObj);//获取玩家计分对象
