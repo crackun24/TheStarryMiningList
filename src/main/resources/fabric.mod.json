@@ -20,7 +20,7 @@
     ]
   },
   "mixins": [
-    "TheStarryMiningList.mixins.json"
+    "thestarrymininglist.json"
   ],
   "depends": {
     "minecraft": "${minecraft_dependency}"
@@ -30,7 +30,7 @@
     "configwrite"
   ],
   "commands": {
-    "TheStarryMiningList": {
+    "theStarryMiningList": {
       "description": "TheStarryMiningList ON/OFF",
       "aliases": []
     }
