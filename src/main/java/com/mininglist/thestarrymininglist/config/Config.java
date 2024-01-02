@@ -1,14 +1,17 @@
-package com.mininglist.thestarrymininglist;
+package com.mininglist.thestarrymininglist.config;
+
+import com.mininglist.thestarrymininglist.TheStarryMiningList;
 
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Properties;
 import java.io.*;
 
 //配置类
 public class Config {
-    static final String CONFIG_FILE_NAME = "miningList.properties";//配置文件的名称
-    private final Properties mProp;
+    public static final String CONFIG_FILE_NAME = "miningList.properties";//配置文件的名称
+    public final Properties mProp;
 
     private void CreateDefaultConfigFile(File file) {
         try (BufferedWriter writer = new BufferedWriter(new FileWriter(file)))//创建新的文件写入对象
@@ -18,7 +21,7 @@ public class Config {
                     "ScoreboardName = MiningList";
             writer.write(DEFAULT_CONFIG_DATA);//写入默认的配置文件信息
         } catch (Exception e) {
-            e.printStackTrace();
+            TheStarryMiningList.LOGGER.warn("warn");
         }
     }//创建默认的配置文件
 
@@ -30,7 +33,7 @@ public class Config {
             try {
                 CreateDefaultConfigFile(file);//如果配置文件不存在,则直接创建默认的配置文件
             } catch (Exception e) {
-                e.printStackTrace();
+                TheStarryMiningList.LOGGER.warn("warn");
             }
         }
 
@@ -40,12 +43,11 @@ public class Config {
                 StandardCharsets.UTF_8)) {//创建输入流,使用utf-8的字符集
             this.mProp.load(reader);//加载配置文件
         } catch (Exception e) {
-            e.printStackTrace();
+            TheStarryMiningList.LOGGER.warn("warn");
         }
     }
 
-    public String GetValue(final String key)//获取配置文件对应的值
-    {
-        return this.mProp.getProperty(key);//返回值
+    public String GetValue(final String key) { //获取配置文件对应的值
+        return this.mProp.getProperty(key); //返回值
     }
 }
