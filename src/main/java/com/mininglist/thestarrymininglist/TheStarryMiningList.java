@@ -40,15 +40,19 @@ public class TheStarryMiningList implements ModInitializer {
 
         //初始化显示状态
         TheStarryMiningListMod.init();
+        SetScoreboardDisplayNameCommand setScoreboardDisplayNameCommand = new SetScoreboardDisplayNameCommand(config);
 
         //#if MC<11900
         // 注册命令以切换计分板的可见/隐藏状态
         CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> TheStarryMiningListCommand.register(dispatcher));
         // 注册设置计分板显示名称的命令
-        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> SetScoreboardDisplayNameCommand.register(dispatcher));
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> setScoreboardDisplayNameCommand.register(dispatcher));
+        // 注册设置玩家自己的计分板显示的命令
+        CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess) -> TheStarryMiningListCommand.registerSingleCommand(dispatcher));
         //#else
         //$$ CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> TheStarryMiningListCommand.register(dispatcher));
-        //$$ CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> SetScoreboardDisplayNameCommand.register(dispatcher));
+        //$$ CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> setScoreboardDisplayNameCommand.register(dispatcher));
+        //$$ CommandRegistrationCallback.EVENT.register((dispatcher, registryAccess, environment) -> TheStarryMiningListCommand.registerSingleCommand(dispatcher));
         //#endif
     }
 }
