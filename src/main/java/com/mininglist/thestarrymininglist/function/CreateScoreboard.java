@@ -2,12 +2,21 @@ package com.mininglist.thestarrymininglist.function;
 
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
-import net.minecraft.scoreboard.ScoreboardCriterion;
-//#if MC>=11900
-//$$ import net.minecraft.text.Text;
-//#else
-import net.minecraft.text.LiteralText;
+//#if MC>=12002
+import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 //#endif
+
+import net.minecraft.scoreboard.ScoreboardCriterion;
+//#if MC<11904
+//$$ import net.minecraft.text.LiteralText;
+//#elseif MC>12003
+import net.minecraft.scoreboard.number.NumberFormat;
+import net.minecraft.scoreboard.number.NumberFormatTypes;
+//#else
+import net.minecraft.text.Text;
+//#endif
+
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 import java.util.Objects;
@@ -23,11 +32,16 @@ public class CreateScoreboard {
             mScoreboardObj = mScoreboard.getNullableObjective(name);//获取服务器的计分板对象
             if (mScoreboardObj == null) {//判断是否为空对象
                 //#if MC<11900
-                mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, new LiteralText(display_name), ScoreboardCriterion.RenderType.INTEGER);
-                //#else
-                //$$ mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, Text.literal(display_name), ScoreboardCriterion.RenderType.INTEGER);
+                //$$ mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, new LiteralText(display_name), ScoreboardCriterion.RenderType.INTEGER);
+                //#elseif MC>=12003
+                mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, Text.literal(display_name), ScoreboardCriterion.RenderType.INTEGER, true, null);
                 //#endif
-                mScoreboard.setObjectiveSlot(1, null);
+
+                //#if MC<12002
+                //$$ mScoreboard.setObjectiveSlot(1, null);
+                //#else
+                mScoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, null);
+                //#endif
             }
         });
     }

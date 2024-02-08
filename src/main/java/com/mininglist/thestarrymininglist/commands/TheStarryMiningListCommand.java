@@ -5,7 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.server.command.ServerCommandSource;
 //#if MC>12001
-//$$ import net.minecraft.scoreboard.ScoreboardDisplaySlot;
+import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 //#endif
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Text;
@@ -63,18 +63,35 @@ public class TheStarryMiningListCommand {
 
     public static void isVisible() {
         if (isScoreboardVisible) {
-            mScoreboard.setObjectiveSlot(1, mScoreboardObj); // 显示计分板
+            //#if MC<12002
+            //$$ mScoreboard.setObjectiveSlot(1, mScoreboardObj); // 显示计分板
+            //#else
+            mScoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, mScoreboardObj);
+            //#endif
+
         } else {
-            mScoreboard.setObjectiveSlot(1, null); // 隐藏计分板
+            //#if MC<12002
+            //$$ mScoreboard.setObjectiveSlot(1, null); // 隐藏计分板
+            //#else
+            //$$ mScoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, null);
+            //#endif
         }
     }
 
     //设置单个玩家的计分板显示状态
     public static void setSinglePlayerDisplayState(ServerPlayerEntity player, boolean state) {
         if (state) {
-            player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(1, mScoreboardObj));//发送关闭玩家的计分板的数据包
+            //#if MC<12002
+            //$$ player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(1, mScoreboardObj));//发送关闭玩家的计分板的数据包
+            //#else
+            player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(ScoreboardDisplaySlot.SIDEBAR, mScoreboardObj));//发送关闭玩家的计分板的数据包
+            //#endif
         } else {
-            player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(1, null));//发送关闭玩家的计分板的数据包
+            //#if MC<12002
+            //$$ player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(1, null));//发送关闭玩家的计分板的数据包
+            //#else
+            player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(ScoreboardDisplaySlot.SIDEBAR, null));//发送关闭玩家的计分板的数据包
+            //#endif
         }
     }
 }
