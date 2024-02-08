@@ -9,14 +9,10 @@ import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 //#if MC<11904
 //$$ import net.minecraft.text.LiteralText;
-//#elseif MC>12003
-import net.minecraft.scoreboard.number.NumberFormat;
-import net.minecraft.scoreboard.number.NumberFormatTypes;
 //#else
 import net.minecraft.text.Text;
 //#endif
 
-import net.minecraft.text.Text;
 import net.minecraft.world.World;
 
 import java.util.Objects;

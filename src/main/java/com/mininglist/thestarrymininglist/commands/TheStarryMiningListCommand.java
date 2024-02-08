@@ -73,7 +73,7 @@ public class TheStarryMiningListCommand {
             //#if MC<12002
             //$$ mScoreboard.setObjectiveSlot(1, null); // 隐藏计分板
             //#else
-            //$$ mScoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, null);
+            mScoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, null);
             //#endif
         }
     }
