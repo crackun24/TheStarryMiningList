@@ -38,6 +38,12 @@ public class CreateScoreboard {
                 //#else
                 mScoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, null);
                 //#endif
+            }else{
+                //#if MC<11900
+                //$$ mScoreboardObj.setDisplayName(new LiteralText(display_name));
+                //#elseif MC>=12003
+                mScoreboardObj.setDisplayName(Text.literal(display_name));
+                //#endif
             }
         });
     }

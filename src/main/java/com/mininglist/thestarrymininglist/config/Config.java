@@ -22,7 +22,7 @@ public class Config {
                             "ScoreboardName = MiningList";
             writer.write(DEFAULT_CONFIG_DATA);//写入默认的配置文件信息
         } catch (Exception e) {
-            TheStarryMiningList.LOGGER.warn("warn");
+            TheStarryMiningList.LOGGER.warn("Config file write error.");
         }
     }//创建默认的配置文件
 
