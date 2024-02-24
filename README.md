@@ -22,7 +22,7 @@ ScoreboardName = MiningList
 
 ## 命令：
 
-**/theStarryMiningListSwitch**
+**/theStarryMiningList**
 <br>用于控制计分板的显示/隐藏（默认关闭）。
 <br>***权限: 仅op***
 - 格式：/theStarryMiningListSwitch true/false
