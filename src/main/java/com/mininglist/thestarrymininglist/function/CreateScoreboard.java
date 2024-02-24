@@ -29,6 +29,8 @@ public class CreateScoreboard {
             if (mScoreboardObj == null) {//判断是否为空对象
                 //#if MC<11900
                 //$$ mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, new LiteralText(display_name), ScoreboardCriterion.RenderType.INTEGER);
+                //#elseif MC>=11900 && MC<12003
+                //$$ mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, Text.literal(display_name), ScoreboardCriterion.RenderType.INTEGER);
                 //#elseif MC>=12003
                 mScoreboardObj = mScoreboard.addObjective(name, ScoreboardCriterion.DUMMY, Text.literal(display_name), ScoreboardCriterion.RenderType.INTEGER, true, null);
                 //#endif
