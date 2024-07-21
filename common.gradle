@@ -72,6 +72,10 @@ if (mcVersion >= 11800) {
 else if (mcVersion >= 11700) {
 	sourceCompatibility = JavaVersion.VERSION_16
 	targetCompatibility = JavaVersion.VERSION_16
+}else if(mcVersion >=1204)
+{
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
 }
 else {
 	sourceCompatibility = JavaVersion.VERSION_1_8
