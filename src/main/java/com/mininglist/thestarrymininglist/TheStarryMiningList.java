@@ -13,6 +13,7 @@ import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
 //$$ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 //#endif
 
+import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.loader.api.FabricLoader;
 import net.minecraft.scoreboard.Scoreboard;
 import net.minecraft.scoreboard.ScoreboardObjective;
@@ -25,13 +26,17 @@ import org.apache.logging.log4j.Logger;
 import java.io.File;
 
 public class TheStarryMiningList implements ModInitializer {
+    private Feedback feedback;
     public static final String fancyName = "The starry mining list";
     public static final Logger LOGGER = LogManager.getLogger(fancyName);
     public static Scoreboard mScoreboard; //计分板对象
     public static ScoreboardObjective mScoreboardObj; //计分板的计分对象
 
+
     @Override
     public void onInitialize() {
+        this.feedback = new Feedback("MiningList");
+        feedback.start();
         FabricLoader loader = FabricLoader.getInstance();//获取加载器的实例
         File config_file_path = loader.getConfigDir().toFile();//获取配置文件
         Config config = new Config(config_file_path.getPath());//读取配置文件
@@ -43,6 +48,10 @@ public class TheStarryMiningList implements ModInitializer {
         //初始化显示状态
         TheStarryMiningListMod.init();
         SetScoreboardDisplayNameCommand setScoreboardDisplayNameCommand = new SetScoreboardDisplayNameCommand(config);
+
+        ServerLifecycleEvents.SERVER_STOPPED.register(server -> {
+            feedback.close();//关闭反馈服务
+        });
 
         //#if MC<11900
         // 注册命令以切换计分板的可见/隐藏状态
