@@ -27,8 +27,7 @@ import java.io.File;
 
 public class TheStarryMiningList implements ModInitializer {
     private Feedback feedback;
-    public static final String fancyName = "The starry mining list";
-    public static final Logger LOGGER = LogManager.getLogger(fancyName);
+    public static final Logger LOGGER = LogManager.getLogger();
     public static Scoreboard mScoreboard; //计分板对象
     public static ScoreboardObjective mScoreboardObj; //计分板的计分对象
 

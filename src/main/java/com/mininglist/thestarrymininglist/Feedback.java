@@ -2,6 +2,9 @@ package com.mininglist.thestarrymininglist;
 
 import com.google.gson.Gson;
 import com.mininglist.thestarrymininglist.dataType.FeedBackJson;
+import com.mininglist.thestarrymininglist.dataType.Msg;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -16,6 +19,7 @@ public class Feedback extends Thread {//发送反馈
     private String modType;//模组的类型
     private boolean mCloseState;//主线程的关闭状态
     private String server_id;//服务器的标识
+    public static final Logger LOGGER = LogManager.getLogger();
 
     private synchronized boolean getCloseState() {
         return this.mCloseState;
@@ -45,7 +49,7 @@ public class Feedback extends Thread {//发送反馈
                 this.server_id = "unknown";//设置为未知的mac码
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.info(Msg.ANSI_RED + "发送遥测数据失败" + Msg.ANSI_RESET);
         }
     }
 
@@ -53,7 +57,7 @@ public class Feedback extends Thread {//发送反馈
     {
         try {
             Gson gson = new Gson();
-            FeedBackJson json_obj = new FeedBackJson(this.server_id, System.currentTimeMillis()/1000, modType);
+            FeedBackJson json_obj = new FeedBackJson(this.server_id, System.currentTimeMillis() / 1000, modType);
             String req_body = gson.toJson(json_obj);//构建json 字符串
 
             URL url = new URL(this.FEED_BACK_URL);
@@ -78,7 +82,7 @@ public class Feedback extends Thread {//发送反馈
             }
             in.close();
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.info(Msg.ANSI_RED + "发送遥测数据失败" + Msg.ANSI_RESET);
         }
     }
 
@@ -90,17 +94,17 @@ public class Feedback extends Thread {//发送反馈
                 onSendFeedback();
                 sleep(43200000);//每隔12个小时发送一次反馈数据
             } catch (InterruptedException e) {
-                throw new RuntimeException(e);
+                break;//打断的时候退出
             }
         }
     }
 
     //关闭
     public synchronized void close() {
-        try{
+        try {
             this.mCloseState = true;//设置关闭的信号成立
             this.interrupt();
-        }catch (Exception e)//不用处理打断的异常
+        } catch (Exception e)//不用处理打断的异常
         {
 
         }

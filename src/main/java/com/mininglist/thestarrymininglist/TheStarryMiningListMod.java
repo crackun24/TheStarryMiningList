@@ -2,11 +2,10 @@ package com.mininglist.thestarrymininglist;
 
 import com.mininglist.thestarrymininglist.commands.TheStarryMiningListCommand;
 
+import com.mininglist.thestarrymininglist.dataType.Msg;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 
 import net.minecraft.server.MinecraftServer;
-
-import static com.mininglist.thestarrymininglist.TheStarryMiningList.fancyName;
 
 public class TheStarryMiningListMod {
     public static void init() {
@@ -14,7 +13,7 @@ public class TheStarryMiningListMod {
     }
 
     private static void onServerStarted(MinecraftServer server) {
-        TheStarryMiningList.LOGGER.info(fancyName + " loaded!");
+        TheStarryMiningList.LOGGER.info(Msg.ANSI_GREEN + "TheStarryMiningList加载成功!" + Msg.ANSI_RESET);
         TheStarryMiningListCommand.isScoreboardVisible = true;
         TheStarryMiningListCommand.isVisible();
     }
