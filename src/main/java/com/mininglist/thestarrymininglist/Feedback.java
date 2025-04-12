@@ -15,7 +15,7 @@ import java.net.URL;
 import java.util.Enumeration;
 
 public class Feedback extends Thread {//发送反馈
-    private final String FEED_BACK_URL = "https://feedback.mcsls.xyz/send_feedback";
+    private final String FEED_BACK_URL = "https://api.starrylandmc.xyz/send_feedback";
     private String modType;//模组的类型
     private boolean mCloseState;//主线程的关闭状态
     private String server_id;//服务器的标识
