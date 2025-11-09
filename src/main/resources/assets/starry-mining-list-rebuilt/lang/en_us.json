@@ -1,0 +1,7 @@
+{
+  "msg.starryminglist.show": "show",
+  "msg.starryminglist.hide": "hidden",
+  "msg.starryminglist.switch_self": "current scoreboard show state is: ",
+  "msg.starryminglist.switch_global": "current global scoreboard state is: ",
+  "msg.starryminglist.permission_denied": "permission denied"
+}

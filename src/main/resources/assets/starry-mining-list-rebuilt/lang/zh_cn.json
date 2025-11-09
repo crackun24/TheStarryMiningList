@@ -1,0 +1,7 @@
+{
+  "msg.starryminglist.show": "显示",
+  "msg.starryminglist.hide": "隐藏",
+  "msg.starryminglist.switch_self": "当前计分板显示状态已经转换为: ",
+  "msg.starryminglist.switch_global": "当前计分板全局显示状态已经转换为: ",
+  "msg.starryminglist.permission_denied": "权限不足"
+}
