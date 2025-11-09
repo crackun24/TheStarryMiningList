@@ -1,0 +1,68 @@
+name: Build and Release Fabric Mod
+
+# 触发器：当创建 tag 时触发构建和发布
+on:
+  push:
+    tags:
+      - 'v*'  # 监听所有版本标签，例如 v1.0.0
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Set up JDK 21
+        uses: actions/setup-java@v2
+        with:
+          java-version: '21'  # 设置 JDK 21
+          distribution: 'adoptopenjdk'
+
+      # 3. 构建所有分支的 JAR 文件
+      - name: Build with Gradle
+        run: ./gradlew build --stacktrace  # 运行 Gradle 构建
+
+      - name: Get version
+        id: get_version
+        run: |
+          VERSION=$(echo ${GITHUB_REF} | sed 's/refs\/tags\///')  # 从 Git Tag 中提取版本号
+          echo "::set-output name=version::$VERSION"
+
+      # 5. 为每个分支上传 JAR 文件到 GitHub Release
+      - name: Upload JAR to GitHub Release
+        if: startsWith(github.ref, 'refs/tags/v')  # 只在 tag 推送时执行
+        run: |
+          VERSION=${{ steps.get_version.outputs.version }}
+          
+          # 遍历所有分支，构建并上传 JAR 文件
+          for branch in $(git branch -r | grep -v '\->'); do
+            branch_name=$(echo $branch | sed 's/origin\///')
+            echo "Building for branch: $branch_name"
+          
+            # 切换到该分支并拉取最新代码
+            git checkout $branch_name
+            git pull origin $branch_name
+          
+            # 构建对应分支的 JAR 文件
+            ./gradlew build --stacktrace
+          
+            # JAR 文件路径
+            FILE=build/libs/${{ github.repository }}-${VERSION}-${branch_name}.jar
+
+            # 创建 GitHub Release 并上传文件
+            RESPONSE=$(curl -X POST \
+              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -d '{"tag_name": "v'${VERSION}'", "name": "Release v'${VERSION}'", "body": "Release for version v'${VERSION}'"}' \
+              https://api.github.com/repos/${{ github.repository }}/releases)
+
+            # 提取 release ID
+            RELEASE_ID=$(echo $RESPONSE | jq -r '.id')
+
+            # 上传 JAR 文件到 GitHub Release
+            curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+              -H "Content-Type: application/octet-stream" \
+              --data-binary @$FILE \
+              https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $FILE)
+          done
