@@ -2,7 +2,6 @@ package xyz.mcsls.starryMiningListRebuilt.Command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.command.ServerCommandSource;
