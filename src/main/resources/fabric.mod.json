@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "id": "starry-mining-list-rebuilt",
+  "version": "${version}",
+  "name": "TheStarryMiningListrebuilt",
+  "description": "挖掘榜模组(重置)",
+  "authors": [],
+  "contact": {},
+  "license": "All-Rights-Reserved",
+  "icon": "assets/starry-mining-list-rebuilt/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "fabric-datagen": [
+    ],
+    "client": [
+      "xyz.mcsls.starryMiningListRebuilt.Client.StarryMiningListRebuiltClient"
+    ],
+    "main": [
+      "xyz.mcsls.starryMiningListRebuilt.StarryMiningListRebuilt"
+    ]
+  },
+  "mixins": [
+    "starry-mining-list-rebuilt.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
