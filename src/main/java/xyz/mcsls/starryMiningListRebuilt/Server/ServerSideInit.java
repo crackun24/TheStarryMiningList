@@ -1,7 +1,7 @@
 package xyz.mcsls.starryMiningListRebuilt.Server;
 
 
-import net.fabricmc.fabric.api.command.v1.CommandRegistrationCallback;
+import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.loader.api.FabricLoader;
@@ -42,7 +42,7 @@ public class ServerSideInit {
         PlayerBlockBreakEvents.AFTER.register(((world, playerEntity, blockPos, blockState, blockEntity) -> PlayerBreakBlockEvent.onBreak(playerEntity, config)));
 
         //注册切换全局显示的指令的事件
-        CommandRegistrationCallback.EVENT.register((d, r) -> ScoreboardCmd.registerAdmin(d, config));
-        CommandRegistrationCallback.EVENT.register((d, r) -> ScoreboardCmd.registerPlayer(d, config));
+        CommandRegistrationCallback.EVENT.register((d, r, e) -> ScoreboardCmd.registerAdmin(d, config));
+        CommandRegistrationCallback.EVENT.register((d, r, e) -> ScoreboardCmd.registerPlayer(d, config));
     }
 }
