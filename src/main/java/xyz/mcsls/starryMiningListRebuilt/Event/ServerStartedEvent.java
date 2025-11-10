@@ -1,6 +1,7 @@
 package xyz.mcsls.starryMiningListRebuilt.Event;
 
 import net.minecraft.scoreboard.ScoreboardCriterion;
+import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.text.Text;
@@ -27,7 +28,7 @@ public class ServerStartedEvent {
         }
 
         scoreboardObjective = scoreboard.addObjective(internalName, ScoreboardCriterion.DUMMY, Text.literal(displayName), ScoreboardCriterion.RenderType.INTEGER);
-        scoreboard.setObjectiveSlot(1, scoreboardObjective);
+        scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, scoreboardObjective);
         scoreboardObjective.setDisplayName(Text.literal(displayName));
 
     }

@@ -5,8 +5,6 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardObjective;
 import org.apache.logging.log4j.Logger;
 import xyz.mcsls.starryMiningListRebuilt.Command.ScoreboardCmd;
 import xyz.mcsls.starryMiningListRebuilt.Config.SBConfig;

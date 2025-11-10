@@ -14,7 +14,7 @@ public class PlayerBreakBlockEvent {
         String internalName = config.getValue(SBConfig.InternalNameConfigKey);//获取内部的名字
 
         //获取记分对象
-        ScoreboardObjective obj = scoreboard.getObjective(internalName);
+        ScoreboardObjective obj = scoreboard.getNullableObjective(internalName);
 
         ScoreboardPlayerScore score = scoreboard.getPlayerScore(player.getName().getString(), obj);
 

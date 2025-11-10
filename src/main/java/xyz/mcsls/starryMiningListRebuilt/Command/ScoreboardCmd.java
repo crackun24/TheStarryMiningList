@@ -3,6 +3,7 @@ package xyz.mcsls.starryMiningListRebuilt.Command;
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
+import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
@@ -23,15 +24,15 @@ public class ScoreboardCmd {
             String internalName = config.getValue(SBConfig.InternalNameConfigKey);
 
             //获取记分对象
-            ScoreboardObjective obj = Global.scoreboard.getObjective(internalName);
+            ScoreboardObjective obj = Global.scoreboard.getNullableObjective(internalName);
 
-            Global.scoreboard.setObjectiveSlot(1, obj);
+            Global.scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, obj);
             System.out.println("show");
         } else {
             //隐藏计分板
 
             System.out.println("hidden");
-            Global.scoreboard.setObjectiveSlot(1, null);
+            Global.scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, null);
         }
     }
 
@@ -70,14 +71,14 @@ public class ScoreboardCmd {
             Text stateMsg;
 
             if (BoolArgumentType.getBool(context, "display")) {//切换为显示状态
-                ScoreboardObjective obj = Global.scoreboard.getObjective(config.getValue(SBConfig.InternalNameConfigKey));
-                player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(1, obj));
+                ScoreboardObjective obj = Global.scoreboard.getNullableObjective(config.getValue(SBConfig.InternalNameConfigKey));
+                player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(ScoreboardDisplaySlot.SIDEBAR, obj));
 
                 stateMsg = Text.translatable("msg.starryminglist.show");
 
             } else {
                 //切换为关闭状态
-                player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(1, null));
+                player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(ScoreboardDisplaySlot.SIDEBAR, null));
 
                 stateMsg = Text.translatable("msg.starryminglist.hide");
             }
