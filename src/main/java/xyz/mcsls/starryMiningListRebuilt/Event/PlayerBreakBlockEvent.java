@@ -1,8 +1,8 @@
 package xyz.mcsls.starryMiningListRebuilt.Event;
 
 import net.minecraft.entity.player.PlayerEntity;
+import net.minecraft.scoreboard.ScoreAccess;
 import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.scoreboard.ScoreboardPlayerScore;
 import xyz.mcsls.starryMiningListRebuilt.Config.SBConfig;
 
 
@@ -16,7 +16,7 @@ public class PlayerBreakBlockEvent {
         //获取记分对象
         ScoreboardObjective obj = scoreboard.getNullableObjective(internalName);
 
-        ScoreboardPlayerScore score = scoreboard.getPlayerScore(player.getName().getString(), obj);
+        ScoreAccess score = scoreboard.getOrCreateScore(player, obj);
 
         //获取玩家的分数
         int playerScore = score.getScore();

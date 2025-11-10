@@ -27,7 +27,7 @@ public class ServerStartedEvent {
             return;
         }
 
-        scoreboardObjective = scoreboard.addObjective(internalName, ScoreboardCriterion.DUMMY, Text.literal(displayName), ScoreboardCriterion.RenderType.INTEGER);
+        scoreboardObjective = scoreboard.addObjective(internalName, ScoreboardCriterion.DUMMY, Text.literal(displayName), ScoreboardCriterion.RenderType.INTEGER, true, null);
         scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, scoreboardObjective);
         scoreboardObjective.setDisplayName(Text.literal(displayName));
 
