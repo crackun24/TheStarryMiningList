@@ -8,7 +8,6 @@ import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
 import net.minecraft.text.Text;
-import net.minecraft.text.TranslatableText;
 import net.minecraft.util.Formatting;
 import xyz.mcsls.starryMiningListRebuilt.Config.SBConfig;
 import xyz.mcsls.starryMiningListRebuilt.Global.Global;
@@ -47,11 +46,11 @@ public class ScoreboardCmd {
                 isGlobalScoreboardVisible = BoolArgumentType.getBool(context, "mode");
                 updateState(config);
 
-                Text stateMsg = isGlobalScoreboardVisible ? new TranslatableText("msg.starryminglist.show") : new TranslatableText("msg.starryminglist.hide");
+                Text stateMsg = isGlobalScoreboardVisible ? Text.translatable("msg.starryminglist.show") : Text.translatable("msg.starryminglist.hide");
 
-                retMsg = new TranslatableText("msg.starryminglist.switch_global").append(stateMsg).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+                retMsg = Text.translatable("msg.starryminglist.switch_global").append(stateMsg).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
             } else {
-                retMsg = new TranslatableText("msg.starryminglist.permission_denied").setStyle(Style.EMPTY.withColor(Formatting.RED));
+                retMsg = Text.translatable("msg.starryminglist.permission_denied").setStyle(Style.EMPTY.withColor(Formatting.RED));
             }
 
             context.getSource().getPlayer().sendMessage(retMsg, false);
@@ -74,16 +73,16 @@ public class ScoreboardCmd {
                 ScoreboardObjective obj = Global.scoreboard.getObjective(config.getValue(SBConfig.InternalNameConfigKey));
                 player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(1, obj));
 
-                stateMsg = new TranslatableText("msg.starryminglist.show");
+                stateMsg = Text.translatable("msg.starryminglist.show");
 
             } else {
                 //切换为关闭状态
                 player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(1, null));
 
-                stateMsg = new TranslatableText("msg.starryminglist.hide");
+                stateMsg = Text.translatable("msg.starryminglist.hide");
             }
 
-            Text retMsg = new TranslatableText("msg.starryminglist.switch_self").append(stateMsg).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+            Text retMsg = Text.translatable("msg.starryminglist.switch_self").append(stateMsg).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
 
             player.sendMessage(retMsg, false);
             return 1;

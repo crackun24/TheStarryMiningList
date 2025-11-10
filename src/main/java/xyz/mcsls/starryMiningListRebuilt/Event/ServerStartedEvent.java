@@ -3,7 +3,7 @@ package xyz.mcsls.starryMiningListRebuilt.Event;
 import net.minecraft.scoreboard.ScoreboardCriterion;
 import net.minecraft.scoreboard.ScoreboardObjective;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.LiteralText;
+import net.minecraft.text.Text;
 import net.minecraft.world.World;
 import xyz.mcsls.starryMiningListRebuilt.Config.SBConfig;
 
@@ -22,13 +22,13 @@ public class ServerStartedEvent {
         //判断获取到的计分板对象是否为空
         if (scoreboardObjective != null) {
 
-            scoreboardObjective.setDisplayName(new LiteralText(displayName));
+            scoreboardObjective.setDisplayName(Text.literal(displayName));
             return;
         }
 
-        scoreboardObjective = scoreboard.addObjective(internalName, ScoreboardCriterion.DUMMY, new LiteralText(displayName), ScoreboardCriterion.RenderType.INTEGER);
+        scoreboardObjective = scoreboard.addObjective(internalName, ScoreboardCriterion.DUMMY, Text.literal(displayName), ScoreboardCriterion.RenderType.INTEGER);
         scoreboard.setObjectiveSlot(1, scoreboardObjective);
-        scoreboardObjective.setDisplayName(new LiteralText(displayName));
+        scoreboardObjective.setDisplayName(Text.literal(displayName));
 
     }
 }
