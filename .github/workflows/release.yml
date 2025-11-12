@@ -1,68 +1,81 @@
-name: Build and Release Fabric Mod
+name: Release Mod
 
-# 触发器：当创建 tag 时触发构建和发布
 on:
   push:
-    tags:
-      - 'v*'  # 监听所有版本标签，例如 v1.0.0
+    branches:
+      - '**'
+
+permissions:
+  contents: write
+  packages: write
 
 jobs:
-  build:
+  build-and-release:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
 
-      - name: Set up JDK 21
-        uses: actions/setup-java@v2
+      - name: Set up Java
+        uses: actions/setup-java@v5
         with:
-          java-version: '21'  # 设置 JDK 21
-          distribution: 'adoptopenjdk'
+          distribution: 'temurin'
+          java-version: '21'
 
-      # 3. 构建所有分支的 JAR 文件
-      - name: Build with Gradle
-        run: ./gradlew build --stacktrace  # 运行 Gradle 构建
+      - name: Set up Gradle
+        uses: gradle/actions/setup-gradle@v5
 
-      - name: Get version
-        id: get_version
+      - name: Grant execution permission for gradlew
+        run: chmod +x ./gradlew
+
+      - name: Extract version from gradle.properties
+        id: extract_version
         run: |
-          VERSION=$(echo ${GITHUB_REF} | sed 's/refs\/tags\///')  # 从 Git Tag 中提取版本号
-          echo "::set-output name=version::$VERSION"
+          version=$(grep '^mod_version=' gradle.properties | cut -d'=' -f2)
+          echo "mod_version=$version" >> $GITHUB_OUTPUT
 
-      # 5. 为每个分支上传 JAR 文件到 GitHub Release
-      - name: Upload JAR to GitHub Release
-        if: startsWith(github.ref, 'refs/tags/v')  # 只在 tag 推送时执行
+      - name: Build JAR with custom name
         run: |
-          VERSION=${{ steps.get_version.outputs.version }}
-          
-          # 遍历所有分支，构建并上传 JAR 文件
-          for branch in $(git branch -r | grep -v '\->'); do
-            branch_name=$(echo $branch | sed 's/origin\///')
-            echo "Building for branch: $branch_name"
-          
-            # 切换到该分支并拉取最新代码
-            git checkout $branch_name
-            git pull origin $branch_name
-          
-            # 构建对应分支的 JAR 文件
-            ./gradlew build --stacktrace
-          
-            # JAR 文件路径
-            FILE=build/libs/${{ github.repository }}-${VERSION}-${branch_name}.jar
+          branch=${GITHUB_REF#refs/heads/}
+          version=${{ steps.extract_version.outputs.mod_version }}
+          jarName="TheStarryMiningListRebuilt-${version}-${branch}.jar"
+          echo "Using JAR name: $jarName"
 
-            # 创建 GitHub Release 并上传文件
-            RESPONSE=$(curl -X POST \
-              -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -d '{"tag_name": "v'${VERSION}'", "name": "Release v'${VERSION}'", "body": "Release for version v'${VERSION}'"}' \
-              https://api.github.com/repos/${{ github.repository }}/releases)
+          ./gradlew clean build
 
-            # 提取 release ID
-            RELEASE_ID=$(echo $RESPONSE | jq -r '.id')
+          originalJar=$(ls build/libs/*.jar | head -n1)
+          targetPath="build/libs/$jarName"
 
-            # 上传 JAR 文件到 GitHub Release
-            curl -X POST -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
-              -H "Content-Type: application/octet-stream" \
-              --data-binary @$FILE \
-              https://uploads.github.com/repos/${{ github.repository }}/releases/$RELEASE_ID/assets?name=$(basename $FILE)
-          done
+          if [[ "$originalJar" != "$targetPath" ]]; then
+            mv "$originalJar" "$targetPath"
+            echo "Renamed jar to $targetPath"
+          else
+            echo "Original jar already matches target, skipping rename."
+          fi
+
+      - name: Upload JAR as workflow artifact (optional)
+        uses: actions/upload-artifact@v4
+        with:
+          name: mod-jar-${{ steps.extract_version.outputs.mod_version }}-${{ github.ref_name }}
+          path: build/libs/TheStarryMiningListRebuilt-${{ steps.extract_version.outputs.mod_version }}-${{ github.ref_name }}.jar
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "${{ steps.extract_version.outputs.mod_version }}"
+          release_name: "Release ${{ steps.extract_version.outputs.mod_version }} (branch ${{ github.ref_name }})"
+          body: |
+            Automated release from branch `${{ github.ref_name }}` with version `${{ steps.extract_version.outputs.mod_version }}`
+          draft: false
+          prerelease: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Upload JAR to Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: "${{ steps.extract_version.outputs.mod_version }}"
+          files: |
+            build/libs/TheStarryMiningListRebuilt-${{ steps.extract_version.outputs.mod_version }}-${{ github.ref_name }}.jar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
