@@ -88,4 +88,4 @@ jobs:
           files: |
             build/libs/TheStarryMiningListRebuilt-${{ steps.extract_version.outputs.mod_version }}-${{ github.ref_name }}.jar
         env:
-          G
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
