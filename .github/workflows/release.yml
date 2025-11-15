@@ -36,22 +36,32 @@ jobs:
 
       - name: Build JAR with custom name
         run: |
+          # Get branch name and version
           branch=${GITHUB_REF#refs/heads/}
           version=${{ steps.extract_version.outputs.mod_version }}
-          jarName="TheStarryMiningListRebuilt-${version}-${branch}.jar"
+          baseName="TheStarryMiningListRebuilt"
+
+          # Set original and target JAR paths
+          originalJar="build/libs/${baseName}-${version}.jar"
+          jarName="${baseName}-${version}-${branch}.jar"
+          targetPath="build/libs/${jarName}"
+
           echo "Using JAR name: $jarName"
 
+          # Run Gradle build
           ./gradlew clean build
 
-          originalJar=$(ls build/libs/*.jar | head -n1)
-          targetPath="build/libs/$jarName"
-
-          if [[ "$originalJar" != "$targetPath" ]]; then
-            mv "$originalJar" "$targetPath"
-            echo "Renamed jar to $targetPath"
-          else
-            echo "Original jar already matches target, skipping rename."
+          # Check if the expected jar exists and rename it
+          if [ ! -f "$originalJar" ]; then
+            echo "ERROR: Expected jar not found: $originalJar"
+            ls -R build/libs
+            exit 1
           fi
+
+          # Rename the original JAR file
+          mv "$originalJar" "$targetPath"
+          echo "Renamed jar to $targetPath"
+
 
       - name: Upload JAR as workflow artifact (optional)
         uses: actions/upload-artifact@v4
@@ -78,4 +88,4 @@ jobs:
           files: |
             build/libs/TheStarryMiningListRebuilt-${{ steps.extract_version.outputs.mod_version }}-${{ github.ref_name }}.jar
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          G
