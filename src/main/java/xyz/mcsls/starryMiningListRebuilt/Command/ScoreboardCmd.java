@@ -5,6 +5,7 @@ import com.mojang.brigadier.arguments.BoolArgumentType;
 import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
 import net.minecraft.scoreboard.ScoreboardDisplaySlot;
 import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.server.command.CommandManager;
 import net.minecraft.server.command.ServerCommandSource;
 import net.minecraft.server.network.ServerPlayerEntity;
 import net.minecraft.text.Style;
@@ -41,23 +42,21 @@ public class ScoreboardCmd {
 
     // 注册命令以切换计分板的全局可见/隐藏状态
     public static void registerAdmin(CommandDispatcher<ServerCommandSource> dispatcher, SBConfig config) {
-        dispatcher.register(literal("miningboardg").then(argument("mode", BoolArgumentType.bool()).executes(context -> {
-            Text retMsg;
-            if (context.getSource().hasPermissionLevel(1)) {
-                isGlobalScoreboardVisible = BoolArgumentType.getBool(context, "mode");
-                updateState(config);
+        dispatcher.register(literal("miningboardg")
+                .requires(CommandManager.requirePermissionLevel(CommandManager.ADMINS_CHECK))
+                .then(argument("mode", BoolArgumentType.bool()).executes(context -> {
+                    Text retMsg;
+                    isGlobalScoreboardVisible = BoolArgumentType.getBool(context, "mode");
+                    updateState(config);
 
-                Text stateMsg = isGlobalScoreboardVisible ? Text.translatable("msg.starryminglist.show") : Text.translatable("msg.starryminglist.hide");
+                    Text stateMsg = isGlobalScoreboardVisible ? Text.translatable("msg.starryminglist.show") : Text.translatable("msg.starryminglist.hide");
 
-                retMsg = Text.translatable("msg.starryminglist.switch_global").append(stateMsg).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
-            } else {
-                retMsg = Text.translatable("msg.starryminglist.permission_denied").setStyle(Style.EMPTY.withColor(Formatting.RED));
-            }
+                    retMsg = Text.translatable("msg.starryminglist.switch_global").append(stateMsg).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
 
-            context.getSource().getPlayer().sendMessage(retMsg, false);
+                    context.getSource().getPlayer().sendMessage(retMsg, false);
 
-            return 1;
-        })));
+                    return 1;
+                })));
     }
 
     // 注册命令以切换计分板玩家的可见/隐藏状态
