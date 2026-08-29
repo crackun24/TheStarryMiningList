@@ -1,35 +1,52 @@
 package xyz.mcsls.starryMiningListRebuilt.Event;
 
-import net.minecraft.scoreboard.ScoreboardCriterion;
-import net.minecraft.scoreboard.ScoreboardDisplaySlot;
-import net.minecraft.scoreboard.ScoreboardObjective;
+import net.minecraft.network.chat.Component;
 import net.minecraft.server.MinecraftServer;
-import net.minecraft.text.Text;
-import net.minecraft.world.World;
+import net.minecraft.world.scores.DisplaySlot;
+import net.minecraft.world.scores.Objective;
+import net.minecraft.world.scores.criteria.ObjectiveCriteria;
 import xyz.mcsls.starryMiningListRebuilt.Config.SBConfig;
-
-import java.util.Objects;
 
 import static xyz.mcsls.starryMiningListRebuilt.Global.Global.scoreboard;
 
 public class ServerStartedEvent {
+
     public static void onServerStarted(MinecraftServer server, SBConfig config) {
-        String internalName = config.getValue(SBConfig.InternalNameConfigKey);//获取内部的名字
-        String displayName = config.getValue(SBConfig.DisplayNameConfigKey);
+        String internalName =
+                config.getValue(SBConfig.InternalNameConfigKey);
 
-        scoreboard = Objects.requireNonNull(server.getWorld(World.OVERWORLD).getScoreboard());
-        ScoreboardObjective scoreboardObjective = scoreboard.getNullableObjective(internalName);
+        String displayName =
+                config.getValue(SBConfig.DisplayNameConfigKey);
 
-        //判断获取到的计分板对象是否为空
+        // 直接获取服务器计分板
+        scoreboard = server.getScoreboard();
+
+        // 获取已有计分目标
+        Objective scoreboardObjective =
+                scoreboard.getObjective(internalName);
+
+        // 已存在，只更新显示名称
         if (scoreboardObjective != null) {
-
-            scoreboardObjective.setDisplayName(Text.literal(displayName));
+            scoreboardObjective.setDisplayName(
+                    Component.literal(displayName)
+            );
             return;
         }
 
-        scoreboardObjective = scoreboard.addObjective(internalName, ScoreboardCriterion.DUMMY, Text.literal(displayName), ScoreboardCriterion.RenderType.INTEGER, true, null);
-        scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, scoreboardObjective);
-        scoreboardObjective.setDisplayName(Text.literal(displayName));
+        // 不存在则创建
+        scoreboardObjective = scoreboard.addObjective(
+                internalName,
+                ObjectiveCriteria.DUMMY,
+                Component.literal(displayName),
+                ObjectiveCriteria.RenderType.INTEGER,
+                true,
+                null
+        );
 
+        // 显示到右侧栏
+        scoreboard.setDisplayObjective(
+                DisplaySlot.SIDEBAR,
+                scoreboardObjective
+        );
     }
 }

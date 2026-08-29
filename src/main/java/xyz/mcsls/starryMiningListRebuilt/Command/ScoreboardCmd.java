@@ -2,20 +2,19 @@ package xyz.mcsls.starryMiningListRebuilt.Command;
 
 import com.mojang.brigadier.CommandDispatcher;
 import com.mojang.brigadier.arguments.BoolArgumentType;
-import net.minecraft.network.packet.s2c.play.ScoreboardDisplayS2CPacket;
-import net.minecraft.scoreboard.ScoreboardDisplaySlot;
-import net.minecraft.scoreboard.ScoreboardObjective;
-import net.minecraft.server.command.CommandManager;
-import net.minecraft.server.command.ServerCommandSource;
-import net.minecraft.server.network.ServerPlayerEntity;
-import net.minecraft.text.Style;
-import net.minecraft.text.Text;
-import net.minecraft.util.Formatting;
+import net.minecraft.ChatFormatting;
+import net.minecraft.commands.CommandSourceStack;
+import net.minecraft.commands.Commands;
+import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ClientboundSetDisplayObjectivePacket;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.scores.DisplaySlot;
+import net.minecraft.world.scores.Objective;
+import org.jspecify.annotations.Nullable;
 import xyz.mcsls.starryMiningListRebuilt.Config.SBConfig;
 import xyz.mcsls.starryMiningListRebuilt.Global.Global;
 
-import static net.minecraft.server.command.CommandManager.argument;
-import static net.minecraft.server.command.CommandManager.literal;
+import java.util.Objects;
 
 
 public class ScoreboardCmd {
@@ -25,15 +24,13 @@ public class ScoreboardCmd {
             String internalName = config.getValue(SBConfig.InternalNameConfigKey);
 
             //获取记分对象
-            ScoreboardObjective obj = Global.scoreboard.getNullableObjective(internalName);
+            @Nullable Objective obj = Global.scoreboard.getObjective(internalName);
 
-            Global.scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, obj);
-            System.out.println("show");
+            Global.scoreboard.setDisplayObjective(DisplaySlot.SIDEBAR, obj);
         } else {
             //隐藏计分板
 
-            System.out.println("hidden");
-            Global.scoreboard.setObjectiveSlot(ScoreboardDisplaySlot.SIDEBAR, null);
+            Global.scoreboard.setDisplayObjective(DisplaySlot.SIDEBAR, null);
         }
     }
 
@@ -41,51 +38,98 @@ public class ScoreboardCmd {
     public static boolean isGlobalScoreboardVisible = true;
 
     // 注册命令以切换计分板的全局可见/隐藏状态
-    public static void registerAdmin(CommandDispatcher<ServerCommandSource> dispatcher, SBConfig config) {
-        dispatcher.register(literal("miningboardg")
-                .requires(CommandManager.requirePermissionLevel(CommandManager.ADMINS_CHECK))
-                .then(argument("mode", BoolArgumentType.bool()).executes(context -> {
-                    Text retMsg;
-                    isGlobalScoreboardVisible = BoolArgumentType.getBool(context, "mode");
-                    updateState(config);
+    public static void registerAdmin(
+            CommandDispatcher<CommandSourceStack> dispatcher,
+            SBConfig config
+    ) {
+        dispatcher.register(
+                Commands.literal("miningboardg")
+                        .requires(Commands.hasPermission(Commands.LEVEL_ADMINS))
+                        .then(
+                                Commands.argument("mode", BoolArgumentType.bool())
+                                        .executes(context -> {
+                                            isGlobalScoreboardVisible =
+                                                    BoolArgumentType.getBool(context, "mode");
 
-                    Text stateMsg = isGlobalScoreboardVisible ? Text.translatable("msg.starryminglist.show") : Text.translatable("msg.starryminglist.hide");
+                                            updateState(config);
 
-                    retMsg = Text.translatable("msg.starryminglist.switch_global").append(stateMsg).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+                                            Component stateMsg = isGlobalScoreboardVisible
+                                                    ? Component.translatable("msg.starryminglist.show")
+                                                    : Component.translatable("msg.starryminglist.hide");
 
-                    context.getSource().getPlayer().sendMessage(retMsg, false);
+                                            Component retMsg =
+                                                    Component.translatable("msg.starryminglist.switch_global")
+                                                            .append(stateMsg)
+                                                            .withStyle(ChatFormatting.GREEN);
 
-                    return 1;
-                })));
+                                            context.getSource().sendSystemMessage(retMsg);
+
+                                            return 1;
+                                        })
+                        )
+        );
     }
 
     // 注册命令以切换计分板玩家的可见/隐藏状态
-    public static void registerPlayer(CommandDispatcher<ServerCommandSource> dispatcher, SBConfig config) {
-        dispatcher.register(literal("miningboard").then(argument("display", BoolArgumentType.bool()).executes(context -> {
-            ServerPlayerEntity player = context.getSource().getPlayer();
-            if (player == null) {//判断获取的玩家对象是否为空
-                return 1;
-            }
+    public static void registerPlayer(
+            CommandDispatcher<CommandSourceStack> dispatcher,
+            SBConfig config
+    ) {
+        dispatcher.register(
+                Commands.literal("miningboard")
+                        .then(
+                                Commands.argument("display", BoolArgumentType.bool())
+                                        .executes(context -> {
+                                            ServerPlayer player = context.getSource().getPlayer();
 
-            Text stateMsg;
+                                            if (player == null) {
+                                                return 1;
+                                            }
 
-            if (BoolArgumentType.getBool(context, "display")) {//切换为显示状态
-                ScoreboardObjective obj = Global.scoreboard.getNullableObjective(config.getValue(SBConfig.InternalNameConfigKey));
-                player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(ScoreboardDisplaySlot.SIDEBAR, obj));
+                                            Component stateMsg;
 
-                stateMsg = Text.translatable("msg.starryminglist.show");
+                                            if (BoolArgumentType.getBool(context, "display")) {
+                                                // 切换为显示状态
+                                                Objective obj = Global.scoreboard.getObjective(
+                                                        config.getValue(SBConfig.InternalNameConfigKey)
+                                                );
 
-            } else {
-                //切换为关闭状态
-                player.networkHandler.sendPacket(new ScoreboardDisplayS2CPacket(ScoreboardDisplaySlot.SIDEBAR, null));
+                                                player.connection.send(
+                                                        new ClientboundSetDisplayObjectivePacket(
+                                                                DisplaySlot.SIDEBAR,
+                                                                obj
+                                                        )
+                                                );
 
-                stateMsg = Text.translatable("msg.starryminglist.hide");
-            }
+                                                stateMsg = Component.translatable(
+                                                        "msg.starryminglist.show"
+                                                );
+                                            } else {
+                                                // 切换为隐藏状态
+                                                player.connection.send(
+                                                        new ClientboundSetDisplayObjectivePacket(
+                                                                DisplaySlot.SIDEBAR,
+                                                                null
+                                                        )
+                                                );
 
-            Text retMsg = Text.translatable("msg.starryminglist.switch_self").append(stateMsg).setStyle(Style.EMPTY.withColor(Formatting.GREEN));
+                                                stateMsg = Component.translatable(
+                                                        "msg.starryminglist.hide"
+                                                );
+                                            }
 
-            player.sendMessage(retMsg, false);
-            return 1;
-        })));
+                                            Component retMsg =
+                                                    Component.translatable(
+                                                                    "msg.starryminglist.switch_self"
+                                                            )
+                                                            .append(stateMsg)
+                                                            .withStyle(ChatFormatting.GREEN);
+
+                                            player.sendSystemMessage(retMsg);
+
+                                            return 1;
+                                        })
+                        )
+        );
     }
 }
