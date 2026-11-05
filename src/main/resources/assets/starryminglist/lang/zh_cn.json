@@ -3,5 +3,10 @@
   "msg.starryminglist.hide": "隐藏",
   "msg.starryminglist.switch_self": "当前计分板显示状态已经转换为: ",
   "msg.starryminglist.switch_global": "当前计分板全局显示状态已经转换为: ",
-  "msg.starryminglist.permission_denied": "权限不足"
+  "msg.starryminglist.permission_denied": "权限不足",
+  "msg.starryminglist.switch_board": "当前展示的榜单已经切换为: ",
+  "msg.starryminglist.board.mining": "挖掘榜",
+  "msg.starryminglist.board.placing": "放置榜",
+  "msg.starryminglist.board_unknown": "未知的榜单类型: %s (可选: mining, placing)",
+  "msg.starryminglist.player_only": "该命令只能由玩家执行"
 }
