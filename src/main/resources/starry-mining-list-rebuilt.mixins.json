@@ -4,6 +4,7 @@
   "package": "xyz.mcsls.starryMiningListRebuilt.Mixin",
   "compatibilityLevel": "JAVA_8",
   "mixins": [
+    "BlockItemMixin"
   ],
   "client": [
   ],
