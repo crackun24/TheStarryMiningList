@@ -6,4 +6,6 @@ import xyz.mcsls.starryMiningListRebuilt.Config.SBConfig;
 public class Global {
     //计分板对象
     public static Scoreboard scoreboard;
+    //配置对象
+    public static SBConfig config;
 }
