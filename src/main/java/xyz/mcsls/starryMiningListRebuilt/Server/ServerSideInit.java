@@ -5,13 +5,12 @@ import net.fabricmc.fabric.api.command.v2.CommandRegistrationCallback;
 import net.fabricmc.fabric.api.event.lifecycle.v1.ServerLifecycleEvents;
 import net.fabricmc.fabric.api.event.player.PlayerBlockBreakEvents;
 import net.fabricmc.loader.api.FabricLoader;
-import net.minecraft.scoreboard.Scoreboard;
-import net.minecraft.scoreboard.ScoreboardObjective;
 import org.apache.logging.log4j.Logger;
 import xyz.mcsls.starryMiningListRebuilt.Command.ScoreboardCmd;
 import xyz.mcsls.starryMiningListRebuilt.Config.SBConfig;
 import xyz.mcsls.starryMiningListRebuilt.Event.PlayerBreakBlockEvent;
 import xyz.mcsls.starryMiningListRebuilt.Event.ServerStartedEvent;
+import xyz.mcsls.starryMiningListRebuilt.Global.Global;
 import xyz.mcsls.starryMiningListRebuilt.StarryMiningListRebuilt;
 import xyz.mcsls.starryMiningListRebuilt.Entity.Base.MsgColorPrefix;
 
@@ -32,6 +31,8 @@ public class ServerSideInit {
             LOGGER.error(MsgColorPrefix.ANSI_RED, "Could not load config file,mod did not load,err: ", e.getMessage());
             return;
         }
+
+        Global.config = config;
 
         LOGGER.info(MsgColorPrefix.ANSI_GREEN + "Configuration loaded.");
 
