@@ -1,0 +1,12 @@
+{
+  "msg.starryminglist.show": "show",
+  "msg.starryminglist.hide": "hidden",
+  "msg.starryminglist.switch_self": "current scoreboard show state is: ",
+  "msg.starryminglist.switch_global": "current global scoreboard state is: ",
+  "msg.starryminglist.permission_denied": "permission denied",
+  "msg.starryminglist.switch_board": "current leaderboard switched to: ",
+  "msg.starryminglist.board.mining": "Mining List",
+  "msg.starryminglist.board.placing": "Placement List",
+  "msg.starryminglist.board_unknown": "unknown leaderboard type: %s (available: mining, placing)",
+  "msg.starryminglist.player_only": "this command can only be run by a player"
+}
